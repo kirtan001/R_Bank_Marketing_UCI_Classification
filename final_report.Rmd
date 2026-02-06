@@ -2,13 +2,7 @@
 title: "End-to-End MLOps: UCI Bank Marketing Analysis"
 author: "Adeshara Kirtan Chiragkumar (025)"
 date: "`r Sys.Date()`"
-output: 
-  html_document:
-    toc: true
-    toc_float: true
-    theme: flatly
-    highlight: tango
-    code_folding: hide
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -314,11 +308,11 @@ Machine learning experiments involve multiple models and metrics, which must be 
 The following code demonstrates how to connect R to an MLflow server, log params, and save artifacts.
 This code was executed locally with a running MLflow server.
 
-```{r mlflow_tracking, eval=FALSE}
+```{r mlflow_tracking, eval=TRUE}
 library(mlflow)
 
-# 1. Setup Tracking Server (Assumed local or remote URI)
-# mlflow_set_tracking_uri("http://127.0.0.1:5000")
+# 1. Setup Tracking Server
+mlflow_set_tracking_uri("http://127.0.0.1:5000")
 mlflow_set_experiment("Bank-Marketing-R")
 
 with(mlflow_start_run(), {

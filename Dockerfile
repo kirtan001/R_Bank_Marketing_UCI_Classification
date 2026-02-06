@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install R packages for Shiny, Plumber, and Modeling
-RUN R -e "install.packages(c('shiny', 'bslib', 'jsonlite', 'plumber', 'tidymodels', 'ranger', 'xgboost', 'themis', 'rmarkdown', 'yardstick', 'vip'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('shiny', 'bslib', 'jsonlite', 'plumber', 'tidymodels', 'ranger', 'xgboost', 'themis', 'rmarkdown', 'yardstick', 'vip'), repos='https://packagemanager.posit.co/cran/__linux__/jammy/latest')"
 
 # Copy the entire project directory into the container
 COPY . /app

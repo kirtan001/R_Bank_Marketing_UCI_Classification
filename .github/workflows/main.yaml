@@ -55,3 +55,19 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to Hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git push --force https://kirtan001:$HF_TOKEN@huggingface.co/spaces/Kirtan001/R_Bank_Marketing_UCI_Classification main

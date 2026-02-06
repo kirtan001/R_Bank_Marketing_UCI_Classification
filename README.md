@@ -66,6 +66,15 @@ The CI/CD pipeline automatically builds and pushes the Docker image to GitHub Co
 2.  Copy the full image URL (e.g., `ghcr.io/username/repo:main`).
 3.  In Hugging Face Space settings, you can configure it to pull this image (requires Access Token if private).
 
+### Option C: Automated CI/CD (GitHub Actions) [Recommended]
+We have configured `main.yaml` to automatically push code improvements to Hugging Face.
+
+1.  **Get Token**: Go to Hugging Face -> Settings -> Access Tokens -> Create "Write" Token.
+2.  **Add Secret**: Go to GitHub Repo -> Settings -> Secrets and variables -> Actions -> New Repository Secret.
+    *   Name: `HF_TOKEN`
+    *   Value: (Paste your token)
+3.  **Deploy**: Any push to `main` will now auto-update your Space!
+
 ## 🤖 CI/CD Pipeline
 The `main.yaml` workflow performs the following:
 1.  **Lints Code**: Checks R syntax for errors.
