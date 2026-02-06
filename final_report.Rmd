@@ -1,12 +1,13 @@
 ---
 title: "End-to-End MLOps: UCI Bank Marketing Analysis"
 author: "Adeshara Kirtan Chiragkumar (025)"
-date: "`r Sys.Date()`"
+date: "2026-02-06"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width=10, fig.height=6)
+
 # Install necessary packages if not present
 required_packages <- c("tidyverse", "tidymodels", "here", "themis", "ranger", "xgboost", "vip", "doParallel")
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
@@ -14,7 +15,7 @@ if(length(new_packages)) install.packages(new_packages)
 
 library(tidyverse)
 library(tidymodels)
-library(yardstick) 
+library(yardstick)
 library(here)
 library(themis) # For SMOTE
 library(vip)    # For variable importance
@@ -37,8 +38,6 @@ The goal is to predict whether a client will subscribe to a term deposit (`y`).
 2.  **Imbalance Handling**: Stratified sampling and evaluation using ROC-AUC (SMOTE prepared but disabled due to Windows compatibility).
 3.  **Multi-Model Training**: Comparing Decision Tree, Random Forest, Gradient Boosting, and XGBoost.
 4.  **MLOps**: Dockerized API serving and CI/CD pipelines.
-
-
 
 ## 🔗 Project Resources
 *   **GitHub Repository**: [kirtan001/R_Bank_Marketing_UCI_Classification](https://github.com/kirtan001/R_Bank_Marketing_UCI_Classification.git)  
@@ -183,7 +182,6 @@ print(bank_rec)
 
 ## 3.3 Model Specifications
 Defining the algorithms to test.
-
 ```{r models}
 # 1. Decision Tree
 dt_spec <- decision_tree() %>%
@@ -246,14 +244,10 @@ results %>%
   theme_minimal()
 ```
 
-The comparison shows that ensemble models outperform simpler models.
-XGBoost achieved the highest ROC-AUC and was selected as the final model
-for deployment and API serving.
-
+The comparison shows that ensemble models outperform simpler models. XGBoost achieved the highest ROC-AUC and was selected as the final model for deployment and API serving.
 
 ## 3.5 Selecting the Best Model
 Extracting the best performing model.
-
 ```{r best_model}
 # Select best model
 best_model_name <- results %>%
@@ -280,7 +274,6 @@ saveRDS(best_results, "src/model.rds")
 ```
 
 ## 3.6 Final Evaluation on Test Set
-
 ```{r evaluation}
 final_preds <- predict(best_results, test_data) %>%
   bind_cols(test_data %>% select(y)) %>%
@@ -295,14 +288,14 @@ yardstick::roc_curve(final_preds, truth = y, .pred_Yes) %>%
   autoplot()
 ```
 
-The ROC curve confirms strong discrimination ability of the final model.
-The curve staying near the top-left corner indicates high true positive rate
-with low false positives.
+The ROC curve confirms strong discrimination ability of the final model. The curve staying near the top-left corner indicates high true positive rate with low false positives.
 
 ---
+
 # Part 4: Experiment Tracking (MLflow)
 
-Machine learning experiments involve multiple models and metrics, which must be tracked for reproducibility. **MLflow** helps us log model details, evaluation metrics, and store the final trained model as an artifact. This ensures our pipeline is reproducible and production-ready.
+Machine learning experiments involve multiple models and metrics, which must be tracked for reproducibility.  
+**MLflow** helps us log model details, evaluation metrics, and store the final trained model as an artifact. This ensures our pipeline is reproducible and production-ready.
 
 ### implementation
 The following code demonstrates how to connect R to an MLflow server, log params, and save artifacts.
@@ -349,7 +342,6 @@ To meet the rubric requirements for **Testing**, we implement automated unit tes
 
 ## 5.1 Test Case 1: Schema Validation
 Ensuring the dataset matches the expected structure.
-
 ```{r test_schema}
 library(testthat)
 
@@ -361,7 +353,6 @@ test_that("Dataset Schema is Correct", {
 
 ## 5.2 Test Case 2 & 3: Performance Validation
 Ensuring the model meets a baseline accuracy threshold.
-
 ```{r test_performance}
 test_that("Model Performance > Baseline", {
   
@@ -378,10 +369,9 @@ test_that("Model Performance > Baseline", {
 # Part 6: CI/CD & Automation
 
 The following workflow file demonstrates how CI/CD is implemented.
-This pipeline automatically runs tests and builds the Docker image
-whenever code is pushed to GitHub.
+This pipeline automatically runs tests and builds the Docker image whenever code is pushed to GitHub.
 
-## 6.1 Workflow File (`.github/workflows/main.yaml`)
+## 6.1 Workflow File (.github/workflows/main.yaml)
 This YAML file defines the automation triggers.
 
 ```yaml
@@ -465,15 +455,9 @@ This project demonstrates a complete production-ready MLOps lifecycle in R.
 
 # Part 8: Deployment Components (API & Docker)
 
-## 8.1 Plumber API (`src/plumber.R`)
-
+## 8.1 Plumber API (src/plumber.R)
 The `plumber.R` file uses the saved model to serve predictions.
-
-The Plumber API exposes the trained model as a REST service.
-It provides a health endpoint and a prediction endpoint for real-time inference.
-
-
-
+The Plumber API exposes the trained model as a REST service. It provides a health endpoint and a prediction endpoint for real-time inference.
 
 ```r
 library(plumber)
@@ -499,9 +483,7 @@ function(req) {
 ```
 
 ## 8.2 Dockerfile
-
-The Dockerfile containerizes the API ensuring the model can run
-consistently across environments and cloud platforms.
+The `Dockerfile` containerizes the API ensuring the model can run consistently across environments and cloud platforms.
 
 ```dockerfile
 FROM rocker/r-ver:4.3.1
@@ -520,7 +502,7 @@ ENTRYPOINT ["R", "-e", "pr <- plumber::plumb('src/plumber.R'); pr$run(host='0.0.
 To handle high traffic loads, we can use **Docker Swarm** to orchestrate multiple containers.
 The `docker-compose.yml` file defines a service stack with **3 replicas**, ensuring high availability and load balancing.
 
-#### **Swarm Configuration (`docker-compose.yml`)**
+#### **Swarm Configuration (docker-compose.yml)**
 ```yaml
 version: '3.8'
 services:

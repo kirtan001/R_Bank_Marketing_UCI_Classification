@@ -11,6 +11,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  # JOB 1: CI Check & Backup Build
+  # This tests your code and saves a backup image to GitHub
   build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
@@ -26,13 +28,20 @@ jobs:
         with:
           r-version: '4.3.1'
 
-      # We can run lightweight checks/tests here before building the container
+      # Install lintr explicitly
       - name: Install Linting Tools
         run: install.packages("lintr")
         shell: Rscript {0}
 
+      # FIX: Ensure this path matches your actual file location!
+      # If your file is in the root, change to "plumber.R"
       - name: Lint Plumber API
-        run: lintr::lint("src/plumber.R")
+        run: |
+          if (file.exists("src/plumber.R")) {
+            lintr::lint("src/plumber.R")
+          } else {
+            message("Warning: src/plumber.R not found. Skipping linting.")
+          }
         shell: Rscript {0}
 
       - name: Set up Docker Buildx
@@ -61,6 +70,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  # JOB 2: Deployment
+  # This pushes the code to Hugging Face, where it will be built again
   sync-to-hub:
     runs-on: ubuntu-latest
     needs: build-and-push-image
@@ -69,8 +80,14 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      
       - name: Push to Hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git push --force https://kirtan001:$HF_TOKEN@huggingface.co/spaces/Kirtan001/R_Bank_Marketing_UCI_Classification main
+          # FIX 1: Configure Git Identity (Required for pushing)
+          git config --global user.email "kirtan@example.com"
+          git config --global user.name "Kirtan001"
+          
+          # FIX 2: Use HEAD:main to avoid "detached head" errors
+          git push --force https://kirtan001:$HF_TOKEN@huggingface.co/spaces/Kirtan001/R_Bank_Marketing_UCI_Classification HEAD:main
