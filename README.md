@@ -1,5 +1,5 @@
 ---
-title: End-to-End MLOps: UCI Bank Marketing Analysis
+title: "End-to-End MLOps: UCI Bank Marketing Analysis"
 emoji: 🏦
 colorFrom: blue
 colorTo: green
