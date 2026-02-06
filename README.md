@@ -1,3 +1,13 @@
+---
+title: End-to-End MLOps: UCI Bank Marketing Analysis
+emoji: 🏦
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+app_port: 7860
+---
+
 # End-to-End MLOps: UCI Bank Marketing Analysis
 
 ![R](https://img.shields.io/badge/R-4.3.1-blue)
