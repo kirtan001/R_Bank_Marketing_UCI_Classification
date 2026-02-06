@@ -11,6 +11,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  # JOB 1: Build and Push to GitHub Container Registry
   build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
@@ -30,7 +31,6 @@ jobs:
         run: install.packages("lintr")
         shell: Rscript {0}
 
-      # Check if file exists before linting to avoid errors
       - name: Lint Plumber API
         run: |
           if (file.exists("src/plumber.R")) {
@@ -66,14 +66,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-sync-to-hub:
+  # JOB 2: Sync to Hugging Face (Correctly indented as a separate job)
+  sync-to-hub:
     runs-on: ubuntu-latest
     needs: build-and-push-image
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          lfs: true # Request LFS files
+          lfs: true  # Enable LFS support in checkout
       
       - name: Push to Hub
         env:
@@ -83,7 +84,7 @@ sync-to-hub:
           git config --global user.email "kirtan@example.com"
           git config --global user.name "Kirtan001"
           
-          # 2. Force download of LFS files (The Fix)
+          # 2. Force download of LFS files (Crucial Fix)
           # We explicitly fetch and pull to ensure the runner has the binary data
           git lfs install
           git lfs fetch --all
@@ -93,5 +94,4 @@ sync-to-hub:
           git remote add space https://Kirtan001:$HF_TOKEN@huggingface.co/spaces/Kirtan001/R_Bank_Marketing_UCI_Classification
 
           # 4. Force push to Hugging Face
-          # We use -u to set upstream and force push
           git push --force space HEAD:main
